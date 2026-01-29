@@ -1,0 +1,34 @@
+REM Mole Installer for macOS
+REM Author: NYTEMODEONLY
+REM Target: macOS
+REM Description: Installs Mole - Deep clean and optimize your Mac
+REM Source: https://github.com/tw93/Mole
+
+REM Open Spotlight
+DELAY 500
+GUI SPACE
+DELAY 700
+
+REM Open Terminal
+STRING Terminal
+DELAY 500
+ENTER
+DELAY 1500
+
+REM Wait for Terminal to open
+DELAY 1000
+
+REM ===== INSTALL MOLE =====
+REM Check if Homebrew is available, use it; otherwise use curl installer
+STRING if command -v brew &>/dev/null; then brew install mole; else curl -fsSL https://raw.githubusercontent.com/tw93/mole/main/install.sh | bash; fi
+ENTER
+DELAY 10000
+
+REM ===== VERIFY INSTALLATION =====
+STRING echo ""; echo "=== Mole Installation Complete ==="; mo --version 2>/dev/null || echo "Mole installed - run 'mo' to start"
+ENTER
+DELAY 1000
+
+REM Show available commands
+STRING echo ""; echo "Available commands:"; echo "  mo clean     - Clean system caches and junk"; echo "  mo uninstall - Remove apps completely"; echo "  mo analyze   - Analyze disk usage"; echo "  mo optimize  - Optimize system"; echo "  mo status    - Show system stats"
+ENTER
