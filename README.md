@@ -21,12 +21,24 @@ flipper/
 ├── nfc/            # NFC dumps and files
 ├── rfid/           # 125 kHz RFID files
 ├── badusb/         # Bad USB payloads
+│   ├── claude-installer/  # Auto-install Claude Code + plugins
 │   ├── windows/
 │   ├── macos/
 │   └── linux/
 ├── animations/     # Custom Flipper animations
 └── tools/          # Helper scripts
 ```
+
+## Featured Payloads
+
+### Claude Code Auto-Installer
+Automatically installs [Claude Code](https://claude.ai/code) CLI with plugins on any machine:
+
+| Payload | Target | What it installs |
+|---------|--------|------------------|
+| `badusb/claude-installer/claude-macos.txt` | macOS | Claude Code + Ralph Loop + Claudeception |
+| `badusb/claude-installer/claude-windows.txt` | Windows | Claude Code + Ralph Loop + Claudeception |
+| `badusb/claude-installer/claude-linux.txt` | Linux | Claude Code + Ralph Loop + Claudeception |
 
 ## Installation
 

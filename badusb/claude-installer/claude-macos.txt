@@ -1,0 +1,99 @@
+REM Claude Code + Ralph Loop + Claudeception Installer for macOS
+REM Author: NYTEMODEONLY
+REM Target: macOS 13.0+
+REM Description: Installs Claude Code CLI, Ralph Loop plugin, and Claudeception skill
+
+REM Open Spotlight
+DELAY 500
+GUI SPACE
+DELAY 700
+
+REM Open Terminal
+STRING Terminal
+DELAY 500
+ENTER
+DELAY 1500
+
+REM Wait for Terminal to open
+DELAY 1000
+
+REM ===== INSTALL CLAUDE CODE =====
+REM Using the official installer script
+STRING curl -fsSL https://claude.ai/install.sh | bash
+ENTER
+DELAY 15000
+
+REM Source shell profile to get claude in PATH
+STRING source ~/.zshrc 2>/dev/null || source ~/.bashrc 2>/dev/null
+ENTER
+DELAY 1000
+
+REM ===== INSTALL RALPH LOOP PLUGIN =====
+STRING claude /plugin install ralph-loop
+ENTER
+DELAY 5000
+
+REM ===== INSTALL CLAUDECEPTION SKILL =====
+REM Create skills directory if it doesn't exist
+STRING mkdir -p ~/.claude/skills
+ENTER
+DELAY 500
+
+REM Clone Claudeception repository
+STRING git clone https://github.com/blader/Claudeception.git ~/.claude/skills/claudeception 2>/dev/null || (cd ~/.claude/skills/claudeception && git pull)
+ENTER
+DELAY 8000
+
+REM Create hooks directory
+STRING mkdir -p ~/.claude/hooks
+ENTER
+DELAY 500
+
+REM Copy the activator hook
+STRING cp ~/.claude/skills/claudeception/scripts/claudeception-activator.sh ~/.claude/hooks/ 2>/dev/null
+ENTER
+DELAY 500
+
+REM Make hook executable
+STRING chmod +x ~/.claude/hooks/claudeception-activator.sh 2>/dev/null
+ENTER
+DELAY 500
+
+REM ===== CONFIGURE SETTINGS =====
+REM Add hook to settings.json using jq or Python
+STRING python3 -c "
+ENTER
+STRING import json, os
+ENTER
+STRING settings_path = os.path.expanduser('~/.claude/settings.json')
+ENTER
+STRING settings = {}
+ENTER
+STRING if os.path.exists(settings_path):
+ENTER
+STRING     with open(settings_path) as f: settings = json.load(f)
+ENTER
+STRING if 'hooks' not in settings: settings['hooks'] = {}
+ENTER
+STRING if 'UserPromptSubmit' not in settings['hooks']: settings['hooks']['UserPromptSubmit'] = []
+ENTER
+STRING hook_entry = {'hooks': [{'type': 'command', 'command': '~/.claude/hooks/claudeception-activator.sh'}]}
+ENTER
+STRING if hook_entry not in settings['hooks']['UserPromptSubmit']: settings['hooks']['UserPromptSubmit'].append(hook_entry)
+ENTER
+STRING with open(settings_path, 'w') as f: json.dump(settings, f, indent=2)
+ENTER
+STRING print('Settings configured!')
+ENTER
+STRING "
+ENTER
+DELAY 2000
+
+REM ===== VERIFY INSTALLATION =====
+STRING echo ""; echo "=== Claude Code Installation Complete ==="; claude --version; echo ""; echo "Installed components:"; echo "  - Claude Code CLI"; echo "  - Ralph Loop Plugin"; echo "  - Claudeception Skill"
+ENTER
+DELAY 1000
+
+REM Done!
+STRING echo ""; echo "Run 'claude' to start!"
+ENTER

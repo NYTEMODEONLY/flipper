@@ -1,0 +1,110 @@
+REM Claude Code + Ralph Loop + Claudeception Installer for Windows
+REM Author: NYTEMODEONLY
+REM Target: Windows 10/11 with WSL or Git Bash
+REM Description: Installs Claude Code CLI, Ralph Loop plugin, and Claudeception skill
+
+REM Open Run dialog
+DELAY 500
+GUI r
+DELAY 700
+
+REM Open PowerShell as Administrator
+STRING powershell -ExecutionPolicy Bypass
+ENTER
+DELAY 2000
+
+REM ===== INSTALL CLAUDE CODE =====
+REM Using the official Windows installer
+STRING irm https://claude.ai/install.ps1 | iex
+ENTER
+DELAY 20000
+
+REM Refresh environment variables
+STRING $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+ENTER
+DELAY 1000
+
+REM ===== INSTALL RALPH LOOP PLUGIN =====
+STRING claude /plugin install ralph-loop
+ENTER
+DELAY 5000
+
+REM ===== INSTALL CLAUDECEPTION SKILL =====
+REM Create skills directory
+STRING New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills" | Out-Null
+ENTER
+DELAY 500
+
+REM Check if git is available
+STRING if (Get-Command git -ErrorAction SilentlyContinue) {
+ENTER
+STRING     if (Test-Path "$env:USERPROFILE\.claude\skills\claudeception") {
+ENTER
+STRING         Set-Location "$env:USERPROFILE\.claude\skills\claudeception"; git pull
+ENTER
+STRING     } else {
+ENTER
+STRING         git clone https://github.com/blader/Claudeception.git "$env:USERPROFILE\.claude\skills\claudeception"
+ENTER
+STRING     }
+ENTER
+STRING } else { Write-Host "Git not found - install Git for Windows to enable Claudeception" -ForegroundColor Yellow }
+ENTER
+DELAY 8000
+
+REM Create hooks directory
+STRING New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\hooks" | Out-Null
+ENTER
+DELAY 500
+
+REM Copy hook script (convert to Windows batch/PowerShell)
+STRING $hookContent = @'
+ENTER
+STRING @echo off
+ENTER
+STRING echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ENTER
+STRING echo MANDATORY SKILL EVALUATION REQUIRED
+ENTER
+STRING echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ENTER
+STRING '@
+ENTER
+STRING $hookContent | Out-File -FilePath "$env:USERPROFILE\.claude\hooks\claudeception-activator.cmd" -Encoding ASCII
+ENTER
+DELAY 500
+
+REM ===== CONFIGURE SETTINGS =====
+STRING $settingsPath = "$env:USERPROFILE\.claude\settings.json"
+ENTER
+STRING $settings = @{}
+ENTER
+STRING if (Test-Path $settingsPath) { $settings = Get-Content $settingsPath | ConvertFrom-Json -AsHashtable }
+ENTER
+STRING if (-not $settings.hooks) { $settings.hooks = @{} }
+ENTER
+STRING if (-not $settings.hooks.UserPromptSubmit) { $settings.hooks.UserPromptSubmit = @() }
+ENTER
+STRING $hookEntry = @{ hooks = @(@{ type = "command"; command = "$env:USERPROFILE\.claude\hooks\claudeception-activator.cmd" }) }
+ENTER
+STRING $settings.hooks.UserPromptSubmit += $hookEntry
+ENTER
+STRING $settings | ConvertTo-Json -Depth 10 | Out-File $settingsPath -Encoding UTF8
+ENTER
+DELAY 2000
+
+REM ===== VERIFY INSTALLATION =====
+STRING Write-Host "`n=== Claude Code Installation Complete ===" -ForegroundColor Green
+ENTER
+STRING claude --version
+ENTER
+STRING Write-Host "`nInstalled components:" -ForegroundColor Cyan
+ENTER
+STRING Write-Host "  - Claude Code CLI"
+ENTER
+STRING Write-Host "  - Ralph Loop Plugin"
+ENTER
+STRING Write-Host "  - Claudeception Skill"
+ENTER
+STRING Write-Host "`nRun 'claude' to start!" -ForegroundColor Yellow
+ENTER
